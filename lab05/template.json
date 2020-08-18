@@ -1,0 +1,76 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_winvm01_name": {
+            "defaultValue": "winvm01",
+            "type": "String"
+        },
+        "disks_winvm01_OsDisk_1_a18a256347f04647958ce19db57b188b_externalid": {
+            "defaultValue": "/subscriptions/8f4ac207-fbe3-4bd9-81bc-6cb1150f618b/resourceGroups/OREILLY-AZ104/providers/Microsoft.Compute/disks/winvm01_OsDisk_1_a18a256347f04647958ce19db57b188b",
+            "type": "String"
+        },
+        "networkInterfaces_winvm0184_externalid": {
+            "defaultValue": "/subscriptions/8f4ac207-fbe3-4bd9-81bc-6cb1150f618b/resourceGroups/oreilly-az104/providers/Microsoft.Network/networkInterfaces/winvm0184",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-07-01",
+            "name": "[parameters('virtualMachines_winvm01_name')]",
+            "location": "westus",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_B1ms"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2016-Datacenter",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Windows",
+                        "name": "[concat(parameters('virtualMachines_winvm01_name'), '_OsDisk_1_a18a256347f04647958ce19db57b188b')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "StandardSSD_LRS",
+                            "id": "[parameters('disks_winvm01_OsDisk_1_a18a256347f04647958ce19db57b188b_externalid')]"
+                        },
+                        "diskSizeGB": 127
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_winvm01_name')]",
+                    "adminUsername": "azureuser",
+                    "windowsConfiguration": {
+                        "provisionVMAgent": true,
+                        "enableAutomaticUpdates": true
+                    },
+                    "secrets": [],
+                    "allowExtensionOperations": true,
+                    "requireGuestProvisionSignal": true
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[parameters('networkInterfaces_winvm0184_externalid')]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "https://oreillyaz104diag433.blob.core.windows.net/"
+                    }
+                }
+            }
+        }
+    ]
+}
